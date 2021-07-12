@@ -8,42 +8,55 @@
 
 #define MAX_LIST_SIZE 64
 
-void do_ls(char[],int);
+void do_ls(char[]);
 void do_stat(char*);
 void show_file_info(char*, struct stat*);
 void mode_to_letters(int, char[]);
 char* uid_to_name(uid_t);
 char* gid_to_name(gid_t);
+void check_flag(char*);
+
+static int isI = 0;
+static int isL = 0;
 
 int main(int ac,char* av[]) {
-	int isL = 0;
 	if (ac == 1 )
-		do_ls(".",isL);
-	else if (ac == 2 && strcmp(av[1], "-l") == 0) 
+		do_ls(".");
+	else if (ac == 2 && memchr(av[1], '-',strlen(av[1])) != NULL)
 	{
-		isL = 1;
-		do_ls(".", isL);
+		check_flag(av[1]);
+		do_ls(".");
 	}
 	else
 	{
-		if (strcmp(av[1],"-l") == 0) {
-			isL = 1;
+		if (memchr(av[1], '-', strlen(av[1])) != NULL){
+			check_flag(av[1]);
 			++av;
 		}
 		while (--ac)
 		{
 			printf("\n %s : \n", *++av);
-			do_ls(*av,isL);
+			do_ls(*av);
 		}
 	}
 
 }
 
+void check_flag(char* av_flag)
+{
+	if(memchr(av_flag, 'l', strlen(av_flag)) != NULL)
+		isL = 1;
+	if (memchr(av_flag, 'i', strlen(av_flag)) != NULL)
+		isI = 1;
+}
+
+
+
 int cmp(const void* a, const void* b) {
 	return (*(int*)a - *(int*)b);
 }
 
-void do_ls(char dirname[] ,int isL)
+void do_ls(char dirname[])
 {
 	DIR* dir_ptr;
 	struct dirent* direntp;
@@ -92,6 +105,9 @@ void do_stat(char* filename)
 void show_file_info(char* filename, struct stat* info_p)
 {
 	char modestr[11];
+	
+	if (isI)
+		printf("%-10d", info_p->st_ino);
 
 	mode_to_letters(info_p->st_mode, modestr);
 

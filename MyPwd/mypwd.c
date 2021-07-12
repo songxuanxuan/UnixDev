@@ -35,6 +35,7 @@ void inum_to_name(ino_t inode, char* namebuf, int buflen)
 		perror(".");
 		exit(1);
 	}
+	
 	while((direntp = readdir(dir_ptr)) != NULL)
 		if (direntp->d_ino == inode) {
 			strncpy(namebuf, direntp->d_name, buflen);
