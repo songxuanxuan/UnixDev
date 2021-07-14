@@ -64,7 +64,6 @@ int logout_tty(const char* line) {
 		}
 	}
 		
-		
 	if (close(fd) == -1)
 		retval = -1;
 	return retval;

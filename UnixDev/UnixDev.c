@@ -2,13 +2,10 @@
 //
 
 #include "header/UnixDev.h"
-#include <vector>
 
-using namespace std;
 
 int main()
 {
-	cout << "Hello CMake." << endl;
-	cout << __LINE__ << endl;
+	test_tty_mode(3);
 	return 0;
 }
