@@ -5,7 +5,6 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_C_STANDARD 11)
 cmake_minimum_required (VERSION 3.8)
 
-
 project ("UnixDev")
 
 # 包含子项目。
@@ -18,3 +17,4 @@ add_subdirectory ("MyLs")
 add_subdirectory ("MyPwd")
 add_subdirectory ("MyMv")
 add_subdirectory ("MyWrite")
+add_subdirectory ("Pong")

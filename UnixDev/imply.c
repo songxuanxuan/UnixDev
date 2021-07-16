@@ -8,6 +8,7 @@
 #include <ctype.h>
 #include <signal.h>
 
+
 #define SLEEPTIME 2
 #define BEEP() putchar('\a')
 
