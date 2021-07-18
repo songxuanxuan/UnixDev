@@ -1,11 +1,12 @@
 cmake_minimum_required(VERSION 3.8)
 
-add_executable(pong "pong.c")
+add_executable(pong "pong.c" "bounce.h")
 
 project("pong")
 
 
 target_link_libraries(pong ncurses)
+target_link_libraries(pong rt)
 
 #add_library(ncurses curses.h)
 
