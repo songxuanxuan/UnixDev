@@ -5,46 +5,44 @@
 
 #define ARG_LEN 64
 #define MAX_ARGS 20
+#define BUFSIZ (ARG_LEN+1)*MAX_ARGS
+#define FLAGE ">>"
 
-void execute(char* arglist[]);
+int execute(char** arglist);
 
 char* makestring(char* buf);
+char* next_cmd(char*, FILE*);
+void free_list(char**);
+char** splitline(const char* line);
+int process(char** args);
 
 int main() {
-	char* arglist[MAX_ARGS + 1];  //end with NULL
-	char argbuf[ARG_LEN];
+	char** arglist;  //end with NULL
+	char* argbuf;
+	char* flag = FLAGE;
 	int i;
-	for (i = 0; i < MAX_ARGS; ) {
-		printf("\n arg[%d]? ", i);
-		if (fgets(argbuf, ARG_LEN, stdin) && *argbuf != '\n') {
-			if (argbuf[0] == 'q')
-				exit(0);
-			arglist[i++] = makestring(&argbuf);
+	while ((argbuf = next_cmd(flag,stdin)) != NULL ) {
+		if ((arglist = splitline(argbuf)) != NULL) {
+			process(arglist);
+			free_list(arglist);
 		}
-		else if (*argbuf == '\n') {
-			if(i <= 0)
-				continue;
-			arglist[i] = NULL;
-			execute(arglist);
-			for (--i; i >= 0; --i) {
-				free(arglist[i]);
-			}
-			++i;  //set i to 0
-		}
-		else {
-			perror("input");
-			exit(1);
-		}
+		free(argbuf);
 	}
 	return 0;
 
 }
 
+void free_list(char** list) {
+	char** lcp = list;
+	while (*list != NULL) {
+		free(*list++);
+	}
+	free(lcp);
+}
 
-
-void execute(char* arglist[])
+int execute(char** arglist)
 {
-	int pid, exit_stat;
+	int pid, exit_stat = -1;
 	pid = fork();
 	if (pid == -1) {
 		perror("fork");
@@ -57,9 +55,9 @@ void execute(char* arglist[])
 	}
 	else {
 		wait(&exit_stat);
-		printf("child( %d ) exited with status %d, %d", pid, exit_stat >> 8, exit_stat & 0377);
+		//printf("child( %d ) exited with status %d, %d", pid, exit_stat >> 8, exit_stat & 0377);
 	}
-
+	return exit_stat;
 }
 
 
@@ -76,4 +74,57 @@ char* makestring(char* buf)
 		return ch;
 	}
 
+}
+
+char* next_cmd(char* flag, FILE* fp) {
+	printf("%s", flag);
+	char* ret = (char*)malloc(BUFSIZ + 1);
+	fgets(ret, BUFSIZ, fp);
+	if (strcmp(ret, "quit\n") == 0) {
+		free(ret);
+		exit(0);
+	}
+	ret[strlen(ret) - 1] = '\0';
+	return ret;
+}
+
+#define is_delim(x) ((x)==' '||(x)=='\t')
+
+char* cpstr(const char* sp, int len) {
+	char* ret = malloc(len + 1);
+	strncpy(ret, sp, len);
+	ret[len] = '\0';
+	return ret;
+}
+
+
+char** splitline(const char* line) {
+	if (line == NULL)
+		return NULL;
+	char* cp = line;
+	char** args = (char**)malloc(sizeof(char*)*MAX_ARGS);
+	int ac = 0;
+	int bufspace = MAX_ARGS;
+	while (*cp != '\0') {
+		while (is_delim(*cp))
+			++cp;
+		if(*cp == '\n')
+			break;
+
+		if (ac + 1 >= bufspace) {
+			bufspace = 2 * bufspace;
+			if ((args = realloc(args, bufspace)) == NULL) {
+				perror("realloc");
+				exit(1);
+			}
+			
+		}
+		//到这里必然是有字符,跳过当前位置判断
+		int len = 1;
+		while (*++cp != '\0' && !is_delim(*cp))		//注意 && 和 宏 对++的影响
+			++len;
+		args[ac++] = cpstr(cp - len,len);
+	}
+	args[ac] = NULL;
+	return args;
 }
