@@ -3,6 +3,7 @@ int ok_to_execute();
 int is_control_command(char* s);
 int do_control_command(char** args);
 int execute(char**);
+int builtin_command(char** args, int* resultp);
 
 
 int process(char** args) {
@@ -12,6 +13,7 @@ int process(char** args) {
 	else if (is_control_command(*args))
 		ret = do_control_command(args);
 	else if (ok_to_execute())
-		ret = execute(args);
+		if (!builtin_command(args, &ret))
+			ret = execute(args);
 	return ret;
 }

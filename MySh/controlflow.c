@@ -53,14 +53,11 @@ int do_control_command(char** args) {
 		else {
 			last_state = process(args + 1);
 			if_result = (last_state == 0 ? SUCCESS : FAIL);
-			if (if_result == SUCCESS)
-				if_state = WANT_THEN;
-			else
-				if_state = WANT_ELSE;
+			if_state = WANT_THEN;
 			ret = 0;
 		}
 	else if (strcmp(cmd, "then") == 0 )
-		if (if_state != WANT_THEN && if_state != WANT_ELSE)
+		if (if_state != WANT_THEN )
 			ret = syn_err("then unexpected");
 		else {
 			if_state = THEN_BLOCK;
