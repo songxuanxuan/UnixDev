@@ -1,0 +1,1 @@
+add_executable(dgserv "dgserv.c" "dgram.c" "dgram.h")

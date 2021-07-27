@@ -5,14 +5,34 @@
 #include <stdlib.h>
 #include "sh/varlib.h"
 
+void child_signal(int signum) {
+	while (waitpid(-1, NULL, WNOHANG) > 0);
+	printf("--wait \n");
+}
+
+void test_signal_fork() {
+	int i = fork();
+	signal(SIGCHLD, child_signal);
+	while (1) {
+		if (i == 0) {
+			printf("child ... \n");
+			sleep(3);
+			execlp("ls", "ls", "-l", "/home", NULL);
+			perror("execlp error");
+		}
+		sleep(2);
+		//printf("pid : %d i : %d\n", getpid(),i);
+	}
+	signal(SIGCHLD, SIG_DFL);
+}
 
 void test_forks(int n) {
 	int ex_stat;
 	int pids[n];
 	int i;
-	for ( i = 0; i < n; ++i)
+	for (i = 0; i < n; ++i)
 	{
-		printf("%d ----\n" , i);
+		printf("%d ----\n", i);
 		pids[i] = fork();
 		if (pids[i] == -1)
 			perror("fork");
@@ -29,8 +49,8 @@ void test_forks(int n) {
 		if (--i == 0)
 			break;
 	}
-	
-		
+
+
 }
 char* new_string(char* name, char* val) {
 	char* ret = (char*)malloc(strlen(name) + strlen(val) + 2);
@@ -68,7 +88,7 @@ void test_pipe() {
 				oops("parent wirte");
 			sleep(2);
 			int read_len = read(pipefd[0], buf, BUFSIZ);
-			if(read_len <= 0)
+			if (read_len <= 0)
 				break;
 			write(1, buf, read_len);
 		}
@@ -76,7 +96,5 @@ void test_pipe() {
 	}
 }
 int main() {
-	char a[10], b[10];
-	int i = scanf("%s\n%s", a, b);
-	int j = 1;
+	test_signal_fork();
 }

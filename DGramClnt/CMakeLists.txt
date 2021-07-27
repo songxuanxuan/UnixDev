@@ -1,0 +1,1 @@
+add_executable(dgclnt "dgclnt.c" "../DGramServ/dgram.h" "../DGramServ/dgram.c")

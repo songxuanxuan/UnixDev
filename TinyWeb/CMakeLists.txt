@@ -1,0 +1,1 @@
+add_executable(tinyweb "tinyweb.c" "servlib.h" "servlib.c")
