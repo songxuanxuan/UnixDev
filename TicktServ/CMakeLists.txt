@@ -1,0 +1,1 @@
+add_executable(tkserv "tkserv.c" "../DGramServ/dgram.h" "../DGramServ/dgram.c" "tkserv_funcs.c")

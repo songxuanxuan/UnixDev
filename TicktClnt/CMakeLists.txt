@@ -1,0 +1,1 @@
+add_executable(tkclnt "tkclnt.c" "../DGramServ/dgram.h" "../DGramServ/dgram.c" "tkclnt_funcs.c")
