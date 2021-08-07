@@ -3,7 +3,10 @@
 #include <sys/wait.h>
 #include <string.h>
 #include <stdlib.h>
+#include <fcntl.h>
+#include <sys/time.h>
 #include "sh/varlib.h"
+
 
 void child_signal(int signum) {
 	while (waitpid(-1, NULL, WNOHANG) > 0);
@@ -95,6 +98,49 @@ void test_pipe() {
 		break;
 	}
 }
+void showdata(const char* name,int fd) {
+	char buf[BUFSIZ];
+	int n;
+	printf("%s \n", name);
+	n = read(fd, buf, BUFSIZ);
+	if (n != -1)
+		write(1, buf, n);
+	write(1, "\n", 1);
+}
+
+//select: 非阻塞等待read
+void select_demo() {
+	char* args[2] = { "/dev/tty", "/dev/input/mice" };
+	int fd1 = open(args[0], O_RDONLY);
+	int fd2 = open(args[1], O_RDONLY);
+	if (fd2 == -1)
+		perror("mouse error \n");
+	int maxfd = 1 + (fd1 > fd2 ? fd1 : fd2);
+	struct timeval timeout;
+	int retval;
+	fd_set readfds;
+	while (1)
+	{
+		//每次select都重置参数吗?
+		FD_ZERO(&readfds);
+		FD_SET(fd1, &readfds);
+		FD_SET(fd2, &readfds);
+
+		timeout.tv_sec = 5;
+		timeout.tv_usec = 0;
+
+		retval = select(maxfd, &readfds, NULL, NULL, &timeout);
+		if (retval > 0) {
+			if (FD_ISSET(fd1, &readfds))
+				showdata(args[0], fd1);
+			else if (FD_ISSET(fd2, &readfds))
+				showdata(args[1], fd2);
+		}
+		else
+			printf("time out \n");
+	}
+
+}
 int main() {
-	test_signal_fork();
+	select_demo();
 }

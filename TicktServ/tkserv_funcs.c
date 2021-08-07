@@ -93,6 +93,8 @@ void handle_request(const char* req, struct sockaddr_in* client) {
 		perror("failed send");
 }
 
+/*判断客户端是否有效,如果无效删除它的tk*/
+
 #define RECLAIM_INTERVAL 60
 void ticket_reclaim() {
 	printf("ticket checking... \n");

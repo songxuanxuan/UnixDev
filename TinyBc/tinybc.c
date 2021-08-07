@@ -61,6 +61,6 @@ int main() {
 		be_dc(todc, fromdc);
 	else {
 		be_bc(todc, fromdc);
-		wait(NULL);  //wait for close childp ?
+		wait(NULL);  //wait for close childp 
 	}
 }

@@ -102,7 +102,6 @@ char** VLtable2environ() {
 	for (i = 0; i < MAXVARS && tab[i].str != NULL; ++i)
 		if (tab[i].global == 1)
 			++n;
-	printf("--%d", n);
 	env = (char**)malloc((n + 1) * sizeof(char*));
 	if (env == NULL)
 		return NULL;
