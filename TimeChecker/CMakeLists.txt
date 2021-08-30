@@ -1,0 +1,1 @@
+add_executable(timechker "timechker.cpp"  "time_util.h")
