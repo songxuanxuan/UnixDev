@@ -83,7 +83,7 @@ int set_listen(int port)
 	bzero(&addr, sizeof(addr));
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(port);
-	char* ip = "localhost";
+	const char* ip = "localhost";
 	inet_pton(PF_INET, ip, &addr.sin_addr);
 	int listenfd = socket(PF_INET, SOCK_STREAM, 0);
 	assert(listenfd >= 0);
@@ -93,9 +93,13 @@ int set_listen(int port)
 	assert(ret != -1);
 	return listenfd;
 }
-
+#define  DEBUG 1
 int main(int ac, char* av[])
 {
+#if DEBUG
+	ac = 2;
+	av[1] = "8888";
+#endif
 	if (ac < 2)
 	{
 		printf("usage:%s port", basename(av[0]));
@@ -125,11 +129,13 @@ int main(int ac, char* av[])
 	while (!stop)
 	{
 		int num = epoll_wait(epollfd, events, MAX_EVENT_NUMBER, -1);
+		//alarm 会发出interupt 信号EINTR
 		if (num < 0 && errno != EINTR)
 		{
 			printf("epoll failure\n");
 			break;
 		}
+		
 		for (int i = 0; i < num; i++)
 		{
 			int sockfd = events[i].data.fd;
@@ -221,11 +227,12 @@ int main(int ac, char* av[])
 			}
 
 		}
-		close(listenfd);
-		close(pipefd[0]);
-		close(pipefd[1]);
-		close(epollfd);
-		delete[] usrs;
-		return 0;
+		
 	}
+	close(listenfd);
+	close(pipefd[0]);
+	close(pipefd[1]);
+	close(epollfd);
+	delete[] usrs;
+	return 0;
 }
