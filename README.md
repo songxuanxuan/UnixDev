@@ -1,4 +1,4 @@
-# UnixDev
+﻿# UnixDev
 	1. fork-execv exit-wait
 	(1)子线程exit后发送信号SIGCHLD,父进程wait接受信号,获得传来的返回值.
 	(2)通过重定向输出输入通信:tinybc.
@@ -24,6 +24,8 @@
 	Semget -> semat -> semop -> semctl : shmtserv
 	10. NFS
 	Network file sys
+	11. CGI服务器
+	reactor模式多进程池,统一事件源
 	
 	
 	

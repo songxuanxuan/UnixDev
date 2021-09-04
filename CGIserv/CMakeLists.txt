@@ -1,0 +1,1 @@
+add_executable(CGIserv "CGIserv.cpp" "processpool.h")
