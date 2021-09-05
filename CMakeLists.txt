@@ -1,6 +1,5 @@
 ﻿# CMakeList.txt: 顶层 CMake 项目文件，在此处执行全局配置
 # 并包含子项目。
-#
 cmake_minimum_required (VERSION 3.8)
 project ("UnixDev")
 
@@ -35,3 +34,4 @@ add_subdirectory("Epoll")
 add_subdirectory("ChartClnt")
 add_subdirectory("TimeChecker")
 add_subdirectory("CGIserv")
+add_subdirectory("Http")
