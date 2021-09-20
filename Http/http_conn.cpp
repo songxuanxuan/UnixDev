@@ -162,6 +162,8 @@ http_conn::HTTP_CODE http_conn::parse_request_line(char* text)
 	/*只有GET*/
 	if (strcasecmp(method, "GET") == 0)
 		m_method = GET;
+	else if (strcasecmp(method, "POST") == 0)
+		m_method = POST;
 	else
 		return BAD_REQUEST;
 	m_url += strspn(m_url, "\t ");
@@ -223,12 +225,18 @@ http_conn::HTTP_CODE http_conn::parse_headers(char* text)
 	}
 	return NO_REQUEST;
 }
-/*我们没有真正解析HTTP请求的消息体，只是判断它是否被完整地读入了*/
+/*解析HTTP请求的消息体，判断它是否被完整地读入了*/
 http_conn::HTTP_CODE http_conn::parse_content(char* text)
 {
-	if (m_read_idx >= (m_content_length + m_checked_idx))
+	if (m_method == POST && m_read_idx >= (m_content_length + m_checked_idx))
 	{
+		char name[128];
+		char pwd[128];
 		text[m_content_length] = '\0';
+		if (sscanf(text, "name=%[^&]%*[^a-z0-9A-Z]pwd=%s", name, pwd) != 2)
+			return INTERNAL_ERROR;
+		if (strcmp(name, "admin") != 0 && strcmp(pwd, "admin") != 0)
+			return FORBIDDEN_REQUEST;
 		return GET_REQUEST;
 	}
 	return NO_REQUEST;
@@ -272,7 +280,6 @@ http_conn::HTTP_CODE http_conn::process_read()
 			line_status = LINE_OPEN;
 			break;
 		}
-
 		default:
 			return INTERNAL_ERROR;
 		}

@@ -212,6 +212,7 @@ int main(int ac, char* av[])
 				}
 				else 
 				{
+					//有新的请求后调整该连接的时间
 					if (timer)
 					{
 						timer->expire = time(nullptr) + 3 * TIMESLOT;

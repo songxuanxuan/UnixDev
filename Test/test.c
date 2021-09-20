@@ -142,5 +142,8 @@ void select_demo() {
 
 }
 int main() {
-	select_demo();
+	char name[128];
+	char pwd[128];
+	scanf("%[^&]%*[^a-z0-9A-Z]%[^&]", name, pwd);
+	getchar();
 }

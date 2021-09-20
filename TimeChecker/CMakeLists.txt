@@ -1,1 +1,1 @@
-add_executable(timechker "timechker.cpp"  "time_util.h" "time_wheel_timer.h" "time_min_heap.h" "test.cpp")
+add_executable(timechker "timechker.cpp"  "time_util.h" "time_wheel_timer.h" "time_min_heap.h" )

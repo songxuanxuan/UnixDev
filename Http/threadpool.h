@@ -38,6 +38,7 @@ private:
 	
 };
 
+//线程池创建,FIFO执行请求
 template<class T>
 threadpool<T>::threadpool(int thread_number /*= 8*/, int max_requests /*= 10000*/)
 	:m_thread_number(thread_number), m_max_requests(max_requests), m_stop(false), m_threads(nullptr)
@@ -70,7 +71,7 @@ threadpool<T>::~threadpool()
 	m_stop = true;
 }
 
-//插入队列后发送信号
+//主线程插入队列后发送信号
 template<class T>
 bool threadpool<T>::append(T* request)
 {
@@ -94,7 +95,7 @@ void* threadpool<T>::worker(void* arg)
 	return pool;
 }
 
-
+//子线程等待信号进行操作
 template<class T>
 void threadpool<T>::run()
 {
@@ -116,8 +117,6 @@ void threadpool<T>::run()
 		request->process();
 	}
 }
-
-
 
 
 #endif // _THREADPOOL_H__
