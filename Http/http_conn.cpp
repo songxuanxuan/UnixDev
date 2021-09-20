@@ -27,8 +27,9 @@ void addfd(int epollfd, int fd, bool one_shot)
 	epoll_event event;
 	event.data.fd = fd;
 	event.events = EPOLLIN | EPOLLET | EPOLLHUP;
+	//event.events = EPOLLIN | EPOLLET ;
 	if (one_shot)
-		event.events |= EPOLLONESHOT;
+		event.events |= EPOLLONESHOT;		//该socket一次只能被一个线程处理
 	epoll_ctl(epollfd, EPOLL_CTL_ADD, fd, &event);
 	setnoblocking(fd);
 }
@@ -78,6 +79,7 @@ void http_conn::init(int sockfd, const sockaddr_in& addr)
 
 void http_conn::init()
 {
+	time_out = false;
 	m_check_state = CHECK_STATE_REQUESTLINE;
 	m_linger = false;
 	m_method = GET;
@@ -363,6 +365,11 @@ bool http_conn::write()
 		}
 
 	}
+}
+
+void http_conn::timeout_close(http_conn* This)
+{
+	This->close_conn();
 }
 
 /*往写缓冲中写入待发送的数据*/

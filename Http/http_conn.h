@@ -20,6 +20,8 @@
 #include <cstdarg>
 #include "locker.h"
 
+class timer_unit;
+
 class http_conn
 {
 public:
@@ -55,6 +57,14 @@ public:
 	bool read(); 
 	/*非阻塞写操作*/ 
 	bool write();
+	/*超时关闭连接*/
+	static void timeout_close(http_conn*);
+	/*超时操作*/
+	bool is_timeout() { return time_out; }
+	void set_timeout() { time_out = true; }
+
+	void set_timer(timer_unit* timer_t) { timer = timer_t; }
+	timer_unit* get_timer() { return timer; }
 private:
 	/*初始化连接*/ 
 	void init(); 
@@ -81,12 +91,17 @@ private:
 	bool add_content_length(int content_length); 
 	bool add_linger(); 
 	bool add_blank_line();
+
+	
 public: 
 	/*所有socket上的事件都被注册到同一个epoll内核事件表中，所以将epoll文件描述符设置为静态的*/ 
 	static int m_epollfd; 
 	/*统计用户数量*/ 
 	static int m_user_count;
 private:
+	timer_unit* timer;
+	/*该连接是否超时*/
+	bool time_out;
 	/*该HTTP连接的socket和对方的socket地址*/ 
 	int m_sockfd; 
 	sockaddr_in m_address;

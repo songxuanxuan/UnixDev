@@ -63,6 +63,7 @@ void add_sig(int sig)
 //时间处理函数
 void timer_handler()
 {
+	printf("timer check done\n");
 	timer_lst.tick();
 	alarm(TIMESLOT);
 }

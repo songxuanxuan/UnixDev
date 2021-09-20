@@ -67,7 +67,7 @@ threadpool<T>::threadpool(int thread_number /*= 8*/, int max_requests /*= 10000*
 template<class T>
 threadpool<T>::~threadpool()
 {
-	delete[]m_threads; 
+	delete[] m_threads; 
 	m_stop = true;
 }
 
