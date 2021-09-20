@@ -58,6 +58,7 @@ void http_conn::close_conn(bool real_close /*= true*/)
 	if (real_close && m_sockfd != -1)
 	{
 		removefd(m_epollfd, m_sockfd);
+		close(m_sockfd);
 		m_sockfd = -1;
 		--m_user_count;
 	}
