@@ -44,6 +44,7 @@ void modfd(int epollfd, int fd, int ev)
 {
 	epoll_event event;
 	event.data.fd = fd;
+	//event.events = ev | EPOLLET | EPOLLRDHUP;
 	event.events = ev | EPOLLET | EPOLLONESHOT | EPOLLRDHUP;
 	epoll_ctl(epollfd, EPOLL_CTL_MOD, fd, &event);
 }
@@ -224,7 +225,7 @@ http_conn::HTTP_CODE http_conn::parse_headers(char* text)
 	}
 	else
 	{
-		printf("oop!unknown header%s\n", text);
+		//printf("oop!unknown header%s\n", text);
 	}
 	return NO_REQUEST;
 }
@@ -256,7 +257,7 @@ http_conn::HTTP_CODE http_conn::process_read()
 	{
 		text = get_line();
 		m_start_line = m_checked_idx;
-		printf("got 1 http line:%s\n", text);
+		//printf("got 1 http line:%s\n", text);
 		switch (m_check_state)
 		{
 		case CHECK_STATE_REQUESTLINE:
@@ -347,7 +348,6 @@ bool http_conn::write()
 		}
 		bytes_to_send -= temp;
 		//bytes_have_send += temp;
-		//todo:
 		if (bytes_to_send <= 0)
 		{
 			/*发送HTTP响应成功，根据HTTP请求中的Connection字段决定是否立即关闭连接*/

@@ -1,5 +1,6 @@
 ﻿#ifndef _HTTP_CONN_H
 #define _HTTP_CONN_H
+#define DEBUG
 
 #include <unistd.h>
 #include <csignal>

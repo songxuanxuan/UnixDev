@@ -1,6 +1,7 @@
-﻿#include<sys/socket.h> 
+﻿
 #define DEBUG 1
 
+#include<sys/socket.h> 
 #include<netinet/in.h> 
 #include<arpa/inet.h> 
 #include<cstdio> 
@@ -126,10 +127,9 @@ int main(int argc, char* argv[]) {
 	addfd(epollfd, sigpipe[0], false);	//alarm 可能是由系统创建的不同线程处理,oneshot后会无法唤醒这个socket
 	addsig(SIGALRM, sig_handler);
 	addsig(SIGINT, sig_handler);
-	alarm(TIME_SLOT);
+	//alarm(TIME_SLOT);
 	/*忽略SIGPIPE信号*/
 	addsig(SIGPIPE, SIG_IGN);
-
 
 	while (true)
 	{
@@ -143,12 +143,16 @@ int main(int argc, char* argv[]) {
 		for (int i = 0; i < number; i++)
 		{
 			int sockfd = events[i].data.fd;
+
 			if (sockfd == listenfd)
 			{
 				//新连接处理
 				struct sockaddr_in client_address;
 				socklen_t client_addrlength = sizeof(client_address);
 				int connfd = accept(listenfd, (struct sockaddr*)&client_address, &client_addrlength);
+#ifdef DEBUG
+				printf("\tnew conn socket : %d \n", connfd);
+#endif // DEBUG
 				if (connfd < 0)
 				{
 					printf("errno is:%d\n", errno);
@@ -209,6 +213,9 @@ int main(int argc, char* argv[]) {
 				users[sockfd].close_conn();
 			else if (events[i].events & EPOLLIN)
 			{
+#ifdef DEBUG
+				printf("read from socket %d \n", sockfd);
+#endif // _DEBUG
 				users[sockfd].get_timer()->fresh_expire(TIME_SLOT * 3);
 				//数据传入处理
 				if (users[sockfd].read())
@@ -218,10 +225,13 @@ int main(int argc, char* argv[]) {
 			}
 			else if (events[i].events & EPOLLOUT)
 			{
+#ifdef DEBUG
+				printf("write to socket %d \n", sockfd);
+#endif // _DEBUG
 				//数据传出处理
+				//TODO : write处理移动到子线程防止阻塞?
 				if (!users[sockfd].write())
 					users[sockfd].close_conn();
-
 			}
 		}
 		if(is_stop)
